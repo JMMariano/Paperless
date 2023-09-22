@@ -10,30 +10,22 @@ namespace service.Controllers
     [Route("api/[controller]")]
     public class ColorTimerController : ControllerBase
     {
-        //TODO: Move to a model
-        private static readonly string[] Colors = new[]
-        {
-            "Red","Blue"
-        };
-
-        //TODO : delete after
-        private static IList<ColorTimer> _timers = new List<ColorTimer>();
+        private IRepository _repository;
 
         //TODO: Add formal logging
         private readonly ILogger<ColorTimerController> _logger;
 
-        public ColorTimerController(ILogger<ColorTimerController> logger)
+        public ColorTimerController(IRepository repository, ILogger<ColorTimerController> logger)
         {
+            _repository = repository;
             _logger = logger;
-            Console.WriteLine("New Instance");
         }
 
         [HttpPost("create")]
         // POST : api/colortimer
-        public void CreateColor()
+        public void CreateColor(string color)
         {
-            _timers.Add(new ColorTimer("Red"));
-            _timers[0].Descriptions.Add(new ColorTimerDescription("Empty"));
+            _repository.AddColor(color);
         }
 
         //TODO: Add proper comments
@@ -41,7 +33,7 @@ namespace service.Controllers
         [HttpGet]
         public IEnumerable<ColorTimer> GetAllColors()
         {
-            return _timers;
+            return _repository.ColorTimers;
         }
     }
 }
