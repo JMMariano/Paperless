@@ -25,7 +25,6 @@ namespace service.Models
 
         #endregion
 
-
     }
 
     // TODO: Figure out getters and setters, if needed
