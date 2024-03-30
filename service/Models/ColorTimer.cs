@@ -1,15 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 namespace service.Models
 {
+    // TODO: Figure out getters and setters, if needed
     public class ColorTimer
     {
+
         #region Properties
         public required string Color { get; set; }
 
-        public double TotalTime { get; set; }
-        public IList<ColorTimerDescription> Descriptions { get; set; }
+        public double TotalTimeElapsed { get; set; }
+        // public IList<ColorTimerDescription> Descriptions { get; set; }
+        // private Stopwatch Timer { get; set; } = new Stopwatch();
 
         #endregion
 
@@ -19,12 +23,29 @@ namespace service.Models
         public ColorTimer(string color)
         {
             Color = color;
-            TotalTime = 0;
-            Descriptions = new List<ColorTimerDescription>();
+            TotalTimeElapsed = 0;
+            // Descriptions = new List<ColorTimerDescription>();
         }
 
         #endregion
 
+        #region Methods
+
+        public void StartTimer()
+        {
+            // TODO: Do timer stuff
+            // this.Timer.Start();
+        }
+
+        public void StopTimer()
+        {
+            // TODO: Do timer stuff
+            // this.Timer.Stop();
+            // double ts = Timer.Elapsed.TotalSeconds;
+            // TotalTime += ts;
+        }
+
+        #endregion
     }
 
     // TODO: Figure out getters and setters, if needed
@@ -33,7 +54,7 @@ namespace service.Models
         #region Properties
         public string? Description { get; set; }
 
-        public float? Time { get; set; }
+        public float? TimeElapsed { get; set; }
 
         #endregion
 
@@ -42,7 +63,7 @@ namespace service.Models
         public ColorTimerDescription(string description)
         {
             Description = description;
-            Time = 0;
+            TimeElapsed = 0;
         }
 
         #endregion
