@@ -49,9 +49,9 @@ namespace service.Controllers
 
         // TODO : Add user id in the future i.e. {id}/stop-timer/{color}
         // TODO : Add description parameter
-        [HttpPost("stop-timer/{color}")]
+        [HttpPost("stop-timer/{color}/{timeElapsed}")]
         // POST : api/colortimer
-        public ColorTimer? StopTimer(string color)
+        public ColorTimer? StopTimer(string color, int timeElapsed)
         {
             ColorTimer? currentColor = _repository.ColorTimers.SingleOrDefault(i => string.Equals(i.Color, color));
 
@@ -61,8 +61,14 @@ namespace service.Controllers
                 return null;
             }
 
-            //currentColor.StopTimer();
+            currentColor.TotalTimeElapsed = timeElapsed;
             return currentColor;
+        }
+
+        [HttpPost("update-file/")]
+        public void UpdateFile()
+        {
+            _repository.UpdateFile();
         }
 
         //TODO: Add proper comments

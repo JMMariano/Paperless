@@ -1,32 +1,44 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace service.Models
 {
     public class Repository : IRepository
     {
-        private Dictionary<string, ColorTimer> _items;
+        private readonly IList<ColorTimer> _items;
+        private readonly TemporaryStorage database;
 
-        public Repository() 
+        public Repository()
         {
-            _items = new Dictionary<string, ColorTimer>();
+            database = new TemporaryStorage();
+            _items = database.ReadFromFile().ToList();
+            //_items = new Dictionary<string, ColorTimer>();
         }
-
-        public ColorTimer? this[string color] => _items.ContainsKey(color) ? _items[color] : null;
-
-        public IEnumerable<ColorTimer> ColorTimers => _items.Values;
 
         public void AddColor(string color)
         {
-            if (!_items.ContainsKey(color)) 
+            if (!_items.Select(i => i.Color).Contains(color))
             {
                 ColorTimer colorTimer = new ColorTimer(color);
-                _items[color] = colorTimer;
+                _items.Add(colorTimer);
+                database.WriteToFile(ColorTimers);
             }
         }
 
-        public void DeleteColor(string color)
+        // Fake method to simulate updating to database.
+        public void UpdateFile()
         {
-            throw new System.NotImplementedException();
+            database.WriteToFile(ColorTimers);
+        }
+
+        public IEnumerable<ColorTimer> ColorTimers
+        {
+            get { return _items; }
+        }
+
+        ~Repository()
+        {
+            database.WriteToFile(ColorTimers);
         }
     }
 }

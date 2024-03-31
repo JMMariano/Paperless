@@ -6,10 +6,9 @@ namespace service.Models
 {
     public interface IRepository
     {
-        IEnumerable<ColorTimer> ColorTimers { get; }
-        ColorTimer? this[string color] { get; }
         void AddColor(string color);
         //ColorTimer UpsertDescription(int index, string description);
-        void DeleteColor(string color);
+        IEnumerable<ColorTimer> ColorTimers { get; }
+        void UpdateFile();
     }
 }

@@ -4,7 +4,7 @@ import ColorTimerService from '../services/ColorTimerService';
 
 const ColorTile = (props) => {
 
-    const [seconds, setSeconds] = useState(0);
+    const [seconds, setSeconds] = useState(props.totalTimeElapsed != null ? props.totalTimeElapsed : 0);
     const [isTimerRunning, setIsTimerRunning] = useState(false);
 
     useEffect(() => {
@@ -23,13 +23,13 @@ const ColorTile = (props) => {
     }, [isTimerRunning]);
 
     const timerToggle = () => {
-        if (isTimerRunning) {
+        if (!isTimerRunning) {
             ColorTimerService.startTimer(props.color).then((res) => {
                 // Update timer
                 console.log(res);
             });
         } else {
-            ColorTimerService.stopTimer(props.color).then((res) => {
+            ColorTimerService.stopTimer(props.color, seconds).then((res) => {
                 // Update timer
                 console.log(res);
             });
@@ -48,7 +48,8 @@ const ColorTile = (props) => {
 };
 
 ColorTile.propTypes = {
-    color: PropTypes.string
+    color: PropTypes.string,
+    totalTimeElapsed: PropTypes.number
 };
 
 export default ColorTile;

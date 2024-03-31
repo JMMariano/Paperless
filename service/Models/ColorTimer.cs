@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
@@ -18,6 +19,8 @@ namespace service.Models
         #endregion
 
         #region Constructors
+
+        public ColorTimer() {}
 
         [SetsRequiredMembers]
         public ColorTimer(string color)

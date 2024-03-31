@@ -19,9 +19,9 @@ class ColorTimerService
         }
     }
 
-    static async stopTimer(color) {
+    static async stopTimer(color, timeElapsed) {
         try {
-            const response = await axios.post('api/colortimer/stop-timer/' + color);
+            const response = await axios.post('api/colortimer/stop-timer/' + color + '/' + timeElapsed);
             return response.data ?? null;
         }
         catch (error) {

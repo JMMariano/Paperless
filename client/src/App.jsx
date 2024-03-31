@@ -22,7 +22,7 @@ export default class App extends Component {
     }
 
     componentDidMount() {
-        // this.fetchColorTimerData();
+        this.fetchColorTimerData();
         // setInterval(this.fetchColorTimerData, 1000);
     }
 
@@ -51,7 +51,7 @@ export default class App extends Component {
                 <div>
                     {this.state.colors.map((color) => {
                         return (
-                            <ColorTile key={color.color} color={color.color}></ColorTile>
+                            <ColorTile key={color.color} color={color.color} totalTimeElapsed={color.totalTimeElapsed}></ColorTile>
                         )
                     })}
                 </div>
