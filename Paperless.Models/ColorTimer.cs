@@ -3,16 +3,19 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
-namespace service.Models
+namespace Paperless.Models
 {
     // TODO: Figure out getters and setters, if needed
-    public class ColorTimer
+    public class ColorTimer : IEqualityComparer<ColorTimer>
     {
 
         #region Properties
-        public required string Color { get; set; }
+        // TODO: Rename to name
+        public string Color { get; set; }
 
-        public double TotalTimeElapsed { get; set; }
+        public string ColorHexCode { get; set; }
+
+        public int TotalTimeElapsed { get; set; }
         // public IList<ColorTimerDescription> Descriptions { get; set; }
         // private Stopwatch Timer { get; set; } = new Stopwatch();
 
@@ -22,10 +25,10 @@ namespace service.Models
 
         public ColorTimer() {}
 
-        [SetsRequiredMembers]
-        public ColorTimer(string color)
+        public ColorTimer(string color, string hexCode)
         {
             Color = color;
+            ColorHexCode = hexCode;
             TotalTimeElapsed = 0;
             // Descriptions = new List<ColorTimerDescription>();
         }
@@ -48,6 +51,32 @@ namespace service.Models
             // TotalTime += ts;
         }
 
+        public bool Equals(ColorTimer? x, ColorTimer? y)
+        {
+            if (object.ReferenceEquals(x, y))
+            {
+                return true;
+            }
+
+            if (object.ReferenceEquals(x, null) ||
+                object.ReferenceEquals(y, null))
+            { 
+                return false;
+            }
+
+            return x.Color == y.Color;
+        }
+
+        public int GetHashCode([DisallowNull] ColorTimer obj)
+        {
+            if (obj == null)
+            {
+                return 0;
+            }
+
+            return obj.Color.GetHashCode();
+        }
+
         #endregion
     }
 
@@ -57,7 +86,7 @@ namespace service.Models
         #region Properties
         public string? Description { get; set; }
 
-        public float? TimeElapsed { get; set; }
+        public int? TimeElapsed { get; set; }
 
         #endregion
 

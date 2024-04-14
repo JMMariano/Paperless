@@ -1,0 +1,30 @@
+﻿<Window x:Class="ColorTimer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ColorTimer"
+        mc:Ignorable="d"
+        Title="Color Timer" Height="550" Width="800" Closing="ColorTimer_Closing">
+    <Grid VerticalAlignment="Stretch">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="75"/>
+        </Grid.RowDefinitions>
+        <UniformGrid x:Name="ColorGrid" VerticalAlignment="Stretch" Grid.Row="0" Columns="3"/>
+        <Grid x:Name="ControlGrid" VerticalAlignment="Bottom" Grid.Row="1" Height="75">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Button Content="Add Color" Grid.Column="0" Click="AddColor_Click" />
+            <TextBox x:Name="ColorNameTextBox" Grid.Column="1" HorizontalAlignment="Center" Margin="0,20,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Center" Width="120"/>
+            <Label Grid.Column="1" Content="Color Name" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top"/>
+            <TextBox x:Name="ColorHexCodeTextBox" Grid.Column="2" HorizontalAlignment="Center" Margin="0,20,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Center" Width="120"/>
+            <Label Grid.Column="2" Content="Color Hex Code" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top"/>
+            <Button Content="Quit" Grid.Column="3" Click="Quit_Click"/>
+        </Grid>
+    </Grid>
+</Window>

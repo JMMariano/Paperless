@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using service.Models;
+using Paperless.Models;
 
 public class TemporaryStorage
 {
@@ -16,7 +16,7 @@ public class TemporaryStorage
             {
                 foreach (var colorTimer in colorTimers)
                 {
-                    writer.WriteLine($"{colorTimer.Color},{colorTimer.TotalTimeElapsed}");
+                    writer.WriteLine($"{colorTimer.Color},{colorTimer.ColorHexCode},{colorTimer.TotalTimeElapsed}");
                 }
             }
 
@@ -49,7 +49,8 @@ public class TemporaryStorage
                     var timer = new ColorTimer
                     {
                         Color = timerProperties[0],
-                        TotalTimeElapsed = int.Parse(timerProperties[1])
+                        ColorHexCode = timerProperties[1],
+                        TotalTimeElapsed = int.Parse(timerProperties[2])
                     };
 
                     colorTimers.Add(timer);
