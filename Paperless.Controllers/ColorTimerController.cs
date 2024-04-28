@@ -1,81 +1,129 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Paperless.Data;
 using Paperless.Models;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Paperless.Controllers
 {
     // TODO : Add exception handling
+    // TODO : Add formal logging
     [ApiController]
     [Route("api/[controller]")]
     public class ColorTimerController : ControllerBase
     {
-        private IRepository _repository;
+        #region Fields
 
-        //TODO: Add formal logging
+        private ColorTimerContext _colorTimerContext;
+
         private readonly ILogger<ColorTimerController> _logger;
 
-        public ColorTimerController(IRepository repository)
+        #endregion
+
+        #region Constructors
+
+        public ColorTimerController(ColorTimerContext colorTimerContext)
         {
-            _repository = repository;
+            _colorTimerContext = colorTimerContext;
         }
 
-        [HttpPost("create/{color}")]
-        // POST : api/colortimer
-        public void CreateColor(string color, string hexCode)
-        {
-            _repository.AddColor(color, hexCode);
-        }
+        #endregion
 
-        // TODO : Add user id in the future {id}/start-timer/{color}
-        // TODO : Add description parameter
-        [HttpPost("start-timer/{color}")]
-        // POST : api/colortimer
-        public ColorTimer? StartTimer(string color)
-        {
-            ColorTimer? currentColor = _repository.ColorTimers.SingleOrDefault(i => string.Equals(i.Color, color));
+        #region Methods
 
-            if (currentColor == null)
+        /// <summary>
+        /// Inserts a new color timer to the database and throws an error if the name already exists on the user's id
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="userId"></param>
+        /// <param name="hexCode"></param>
+        /// <returns></returns>
+        [HttpPost("create/{name}")]
+        public async Task CreateColor(string name, [FromBody] int userId, [FromQuery] string hexCode)
+        {
+            // Check if color already exists on the user's id.
+            var res = await _colorTimerContext.ColorTimers
+                .SingleOrDefaultAsync(i => string.Equals(i.Name, name) && i.UserId == userId);
+
+            if (res ==  null)
             {
-                // TODO : Add some sort of logging here maybe
-                return null;
+                var newColorTimer = new ColorTimer(name, hexCode, userId);
+                // TODO: Get result first before saving
+                await _colorTimerContext.AddAsync(newColorTimer);
+                await _colorTimerContext.SaveChangesAsync();
+            }
+            else
+            {
+                //Return an error and log details when the name already exists.
+            }
+        }
+
+        // TODO: Add LastTimeSynced as a query parameter
+        // TODO: Do not use FromBody for user id
+        // TODO: Change return type to also return the Color Timer
+        /// <summary>
+        /// Sets the IsRunning property to <see langword="true"/> for the ColorTimer based on the name and current user's id.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [HttpPost("start-timer/{name}")]
+        public async Task StartTimer(string name, [FromBody] int userId)
+        {
+            var res = await _colorTimerContext.ColorTimers
+                .SingleOrDefaultAsync(i => string.Equals(i.Name, name) && i.UserId == userId);
+
+            if (res == null)
+            {
+                return;
             }
 
-            return currentColor;
-            //currentColor.StartTimer();
+            res.IsRunning = true;
+            _colorTimerContext.Update(res);
+            // TODO: Get result after saving and log any errors that occured
+            await _colorTimerContext.SaveChangesAsync();
         }
 
-        // TODO : Add user id in the future i.e. {id}/stop-timer/{color}
-        // TODO : Add description parameter
-        [HttpPost("stop-timer/{color}/{timeElapsed}")]
-        // POST : api/colortimer
-        public ColorTimer? StopTimer(string color, int timeElapsed)
+        // TODO: Add LastTimeSynced as a query parameter
+        // TODO: Do not use FromBody for user id
+        // TODO: Change return type to also return the Color Timer
+        /// <summary>
+        /// Sets the IsRunning property to <see langword="false"/> and adds the time elapsed from the client timer to the current Color Timer based on the name and current user's id.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="userId"></param>
+        /// <param name="timeElapsed"></param>
+        /// <returns></returns>
+        [HttpPost("stop-timer/{name}")]
+        public async Task StopTimer(string name, [FromBody] int userId, [FromQuery] int timeElapsed)
         {
-            ColorTimer? currentColor = _repository.ColorTimers.SingleOrDefault(i => string.Equals(i.Color, color));
+            var res = await _colorTimerContext.ColorTimers
+                .SingleOrDefaultAsync(i => string.Equals(i.Name, name) && i.UserId == userId);
 
-            if (currentColor == null)
+            if (res == null)
             {
-                // TODO : Add some sort of logging here maybe
-                return null;
+                return;
             }
 
-            currentColor.TotalTimeElapsed = timeElapsed;
-            return currentColor;
+            res.IsRunning = false;
+            // TODO: Fix TotalTimeElapsed computation by referencing the last time synced (i.e. check if the LastTimeSynced from client and server match)
+            res.TotalTimeElapsed += timeElapsed;
+            _colorTimerContext.Update(res);
+            // TODO: Get result after saving and log any errors that occured
+            await _colorTimerContext.SaveChangesAsync();
         }
 
-        [HttpPost("update-file/")]
-        public void UpdateFile()
+        /// <summary>
+        /// Returns all color timers of the current user.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("getAllColorsTimers")]
+        public async Task<IList<ColorTimer>> GetAllColorTimers()
         {
-            _repository.UpdateFile();
+            var result = await _colorTimerContext.ColorTimers.ToListAsync();
+            return result;
         }
 
-        //TODO: Add proper comments
-        // GET : api/colortimer
-        [HttpGet]
-        public IEnumerable<ColorTimer> GetAllColors()
-        {
-            return _repository.ColorTimers;
-        }
+        #endregion
     }
 }

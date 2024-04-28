@@ -18,7 +18,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Paperless.Models", "Paperle
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Standalone Applications", "Standalone Applications", "{AE6D69B9-9DDC-44BD-8D8E-0FD99CB154F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorTimer", "Standalone Applications\ColorTimer\ColorTimer.csproj", "{277DD2D4-ED02-495E-BEE7-F0BE999A0543}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorTimerApplication", "Standalone Applications\ColorTimer\ColorTimerApplication.csproj", "{277DD2D4-ED02-495E-BEE7-F0BE999A0543}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Paperless.Data", "Paperless.Data\Paperless.Data.csproj", "{2BEB2B54-7928-4BA4-BE08-0E0A034D758C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database Scripts", "Database Scripts", "{CD0CA0D6-5D2A-487F-B111-51C4BA017C74}"
+	ProjectSection(SolutionItems) = preProject
+		Database Scripts\database_create.sql = Database Scripts\database_create.sql
+		Database Scripts\Paperless_0.0.1.sql = Database Scripts\Paperless_0.0.1.sql
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,6 +56,10 @@ Global
 		{277DD2D4-ED02-495E-BEE7-F0BE999A0543}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{277DD2D4-ED02-495E-BEE7-F0BE999A0543}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{277DD2D4-ED02-495E-BEE7-F0BE999A0543}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BEB2B54-7928-4BA4-BE08-0E0A034D758C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BEB2B54-7928-4BA4-BE08-0E0A034D758C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BEB2B54-7928-4BA4-BE08-0E0A034D758C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BEB2B54-7928-4BA4-BE08-0E0A034D758C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

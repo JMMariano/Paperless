@@ -12,39 +12,45 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Paperless.Controllers;
+using Paperless.Data;
 using Color = System.Windows.Media.Color;
 using ColorConverter = System.Windows.Media.ColorConverter;
 
 // TODO: Rename projects and namespaces to not have redundancy (e.g. too many things are named ColorTimer)
-namespace ColorTimer
+namespace ColorTimerApplication
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-        public IList<Paperless.Models.ColorTimer> ColorTimers { get; set; }
-        public ColorTimerController colorTimerController;
+        public IList<Paperless.Models.ColorTimer> ColorTimers { get; set; } = new List<Paperless.Models.ColorTimer>();
+        public ColorTimerController _colorTimerController;
 
-        public MainWindow(ColorTimerController controller)
+        public MainWindow(ColorTimerContext colorTimerContext)
         {
             InitializeComponent();
-            colorTimerController = controller;
+            _colorTimerController = new ColorTimerController(colorTimerContext);
         }
 
-        public void GenerateColorGrid()
+        private async void InitializeColorGrid()
         {
-            ColorGrid.Children.Clear();
+            var res = await _colorTimerController.GetAllColorTimers();
 
-            for (int i = 0; i < ColorTimers.Count; i++)
+            if (res != null)
             {
-                var button = new ColorTimerButton(
-                    ColorTimers[i].Color,
-                    ColorTimers[i].ColorHexCode,
-                    ColorTimers[i].TotalTimeElapsed,
-                    colorTimerController);
+                ColorTimers.ToList().AddRange(res.ToList());
+                
+                for (int i = 0; i < ColorTimers.Count; i++)
+                {
+                    var button = new ColorTimerButton(
+                        ColorTimers[i].Color,
+                        ColorTimers[i].ColorHexCode,
+                        ColorTimers[i].TotalTimeElapsed,
+                        _colorTimerController);
 
-                ColorGrid.Children.Add(button);
+                    ColorTimerGrid.Children.Add(button);
+                }
             }
         }
 
@@ -53,8 +59,8 @@ namespace ColorTimer
             var colorName = ColorNameTextBox.Text;
             var colorHexCode = ColorHexCodeTextBox.Text;
 
-            colorTimerController.CreateColor(colorName, colorHexCode);
-            IList<Paperless.Models.ColorTimer> currentColorTimers = colorTimerController.GetAllColors().ToList();
+            _colorTimerController.CreateColor(colorName, colorHexCode);
+            IList<Paperless.Models.ColorTimer> currentColorTimers = _colorTimerController.GetAllColors().ToList();
             var newColorTimersFromServer = currentColorTimers.Except(ColorTimers, comparer: new Paperless.Models.ColorTimer()).ToList();
 
             for (int i = 0; i < newColorTimersFromServer.Count; i++)
@@ -63,21 +69,15 @@ namespace ColorTimer
                     newColorTimersFromServer[i].Color,
                     newColorTimersFromServer[i].ColorHexCode,
                     newColorTimersFromServer[i].TotalTimeElapsed,
-                    colorTimerController);
+                    _colorTimerController);
 
-                ColorGrid.Children.Add(button);
+                ColorTimerGrid.Children.Add(button);
             }
         }
 
         private void Quit_Click(object sender, RoutedEventArgs e)
         {
-            colorTimerController.UpdateFile();
             Application.Current.Shutdown();
-        }
-
-        private void ColorTimer_Closing(object sender, CancelEventArgs e)
-        {
-            colorTimerController.UpdateFile();
         }
     }
 }

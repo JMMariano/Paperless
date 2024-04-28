@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace Paperless.Models
 {
@@ -10,14 +7,17 @@ namespace Paperless.Models
     {
 
         #region Properties
-        // TODO: Rename to name
-        public string Color { get; set; }
+        public string? Name { get; set; }
 
-        public string ColorHexCode { get; set; }
+        public string? ColorHexCode { get; set; }
 
-        public int TotalTimeElapsed { get; set; }
-        // public IList<ColorTimerDescription> Descriptions { get; set; }
-        // private Stopwatch Timer { get; set; } = new Stopwatch();
+        public long TotalTimeElapsed { get; set; }
+
+        public DateTime LastTimeSynced { get; set; }
+
+        public bool IsRunning { get; set; }
+
+        public int UserId { get; set; }
 
         #endregion
 
@@ -25,31 +25,19 @@ namespace Paperless.Models
 
         public ColorTimer() {}
 
-        public ColorTimer(string color, string hexCode)
+        public ColorTimer(string name, string hexCode, int userId)
         {
-            Color = color;
+            Name = name;
             ColorHexCode = hexCode;
             TotalTimeElapsed = 0;
-            // Descriptions = new List<ColorTimerDescription>();
+            LastTimeSynced = DateTime.Now;
+            IsRunning = false;
+            UserId = userId;
         }
 
         #endregion
 
         #region Methods
-
-        public void StartTimer()
-        {
-            // TODO: Do timer stuff
-            // this.Timer.Start();
-        }
-
-        public void StopTimer()
-        {
-            // TODO: Do timer stuff
-            // this.Timer.Stop();
-            // double ts = Timer.Elapsed.TotalSeconds;
-            // TotalTime += ts;
-        }
 
         public bool Equals(ColorTimer? x, ColorTimer? y)
         {
@@ -64,7 +52,7 @@ namespace Paperless.Models
                 return false;
             }
 
-            return x.Color == y.Color;
+            return x.Name == y.Name;
         }
 
         public int GetHashCode([DisallowNull] ColorTimer obj)
@@ -74,28 +62,7 @@ namespace Paperless.Models
                 return 0;
             }
 
-            return obj.Color.GetHashCode();
-        }
-
-        #endregion
-    }
-
-    // TODO: Figure out getters and setters, if needed
-    public class ColorTimerDescription
-    {
-        #region Properties
-        public string? Description { get; set; }
-
-        public int? TimeElapsed { get; set; }
-
-        #endregion
-
-        #region Constructors
-
-        public ColorTimerDescription(string description)
-        {
-            Description = description;
-            TimeElapsed = 0;
+            return obj.Name.GetHashCode();
         }
 
         #endregion

@@ -11,7 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
 
-namespace ColorTimer
+namespace ColorTimerApplication
 {
     class ColorTimerButton : Button
     {
@@ -19,10 +19,10 @@ namespace ColorTimer
         ColorTimerController ColorTimerController;
 
         public string ColorName;
-        public int TimeElapsed;
+        public long TimeElapsed;
 
 
-        public ColorTimerButton(string colorName, string hexCode, int timeElapsed, ColorTimerController controller)
+        public ColorTimerButton(string colorName, string hexCode, long timeElapsed, ColorTimerController controller)
         {
             ColorName = colorName;
             TimeElapsed = timeElapsed;

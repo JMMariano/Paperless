@@ -3,8 +3,13 @@ using Paperless.Controllers;
 using System.Configuration;
 using System.Data;
 using System.Windows;
+using Microsoft.Extensions.DependencyInjection;
+using Paperless.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using System.IO;
 
-namespace ColorTimer
+namespace ColorTimerApplication
 {
     /// <summary>
     /// Interaction logic for App.xaml
@@ -13,12 +18,18 @@ namespace ColorTimer
     {
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            Repository repository = new Repository();
-            ColorTimerController controller = new ColorTimerController(repository);
-            MainWindow window = new MainWindow(controller);
-            window.ColorTimers = repository.ColorTimers.ToList();
-            window.GenerateColorGrid();
-            window.Show();
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+
+            var services = new ServiceCollection();
+            services.AddDbContext<ColorTimerContext>(options =>
+                options.UseSqlServer(builder.Build().GetConnectionString("DefaultConnection")));
+            services.AddSingleton<MainWindow>();
+
+            var serviceProvider = services.BuildServiceProvider();
+            var mainWindow = serviceProvider.GetService<MainWindow>();
+            mainWindow.Show();
         }
     }
 
