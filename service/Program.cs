@@ -1,12 +1,14 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using service.Models;
+using Paperless.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddSqlServer<ColorTimerContext>(builder.Configuration.GetConnectionString("DefaultConnection"));
+
 // Add services to the container.
-builder.Services.AddSingleton<IRepository, Repository>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -26,5 +28,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseRouting();
 
 app.Run();

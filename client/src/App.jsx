@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import ColorTimerService from './services/ColorTimerService';
+
+import ColorTile from './components/ColorTile';
 
 //TODO : Change fetch to axios
 export default class App extends Component {
@@ -6,55 +9,53 @@ export default class App extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { colors: [], loading: true };
+
+        this.state = {
+            colors: [],
+            loading: true,
+            // Below properties should be on another component
+            isTimerRunning : false,
+            seconds: 0
+        };
+
+        this.interval = null;
     }
 
     componentDidMount() {
-        this.fetchColorData()
-        this.populateColorData();
+        this.fetchColorTimerData();
+        // setInterval(this.fetchColorTimerData, 1000);
     }
 
-    static renderColorsTable(colors) {
-        return (
-            <table className='table table-striped' aria-labelledby="tabelLabel">
-                <thead>
-                    <tr>
-                        <th>Color</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {colors.map(color =>
-                        <tr key={color.color}>
-                            <td>{color.color}</td>
-                        </tr>
-                    )}
-                </tbody>
-            </table>
-        );
+    //#region Event handlers
+    fetchColorTimerData = async () => {
+        this.setState({ loading: true });
+        const colorData = await ColorTimerService.fetchAllColorData();
+        this.setState({ colors: colorData, loading: false });
     }
+
+    addColor = async (color) => {
+        this.setState({ loading: true });
+        await ColorTimerService.addNewColor(color);
+        const colorData = await ColorTimerService.fetchAllColorData();
+        this.setState({ colors: colorData, loading: false });
+    }
+
+    //#endregion
 
     render() {
-        let contents = this.state.loading
-            ? <p><em>Loading... Please refresh once the ASP.NET backend has started. See <a href="https://aka.ms/jspsintegrationreact">https://aka.ms/jspsintegrationreact</a> for more details.</em></p>
-            : App.renderColorsTable(this.state.colors);
-
         return (
-            <div>
-                <h1 id="tabelLabel" >Colors</h1>
-                <p>This component demonstrates fetching data from the server.</p>
-                {contents}
+            <div className='h-screen'>
+                <button className='place-content-center' onClick={() => this.addColor('Red')}>Add Color</button>
+                <button className='place-content-center' onClick={() => this.addColor('Blue')}>Add Color</button>
+                <button className='place-content-center' onClick={() => this.addColor('Green')}>Add Color</button>
+                <div>
+                    {this.state.colors.map((color) => {
+                        return (
+                            <ColorTile key={color.color} color={color.color} totalTimeElapsed={color.totalTimeElapsed}></ColorTile>
+                        )
+                    })}
+                </div>
             </div>
         );
-    }
-
-    async fetchColorData() {
-        const options = { method: "POST", headers: { 'Content-Type': 'application/json' }};
-        const request = await fetch('api/colortimer/create', options);
-    }
-
-    async populateColorData() {
-        const response = await fetch('api/colortimer');
-        const data = await response.json();
-        this.setState({ colors: data, loading: false });
     }
 }

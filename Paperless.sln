@@ -7,6 +7,27 @@ Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "client", "client\client.esp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "service", "service\service.csproj", "{FE126F80-0F54-40B3-81B3-7EF521F99E0F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{93E688A1-A239-41B0-99B6-E9592AEA4109}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Paperless.Controllers", "Paperless.Controllers\Paperless.Controllers.csproj", "{5507368A-A97D-4279-A9F0-BB246E53C6C3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Paperless.Models", "Paperless.Models\Paperless.Models.csproj", "{B5234BFE-6A67-4F3F-9835-A210952B51A1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Standalone Applications", "Standalone Applications", "{AE6D69B9-9DDC-44BD-8D8E-0FD99CB154F3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorTimerApplication", "Standalone Applications\ColorTimer\ColorTimerApplication.csproj", "{277DD2D4-ED02-495E-BEE7-F0BE999A0543}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Paperless.Data", "Paperless.Data\Paperless.Data.csproj", "{2BEB2B54-7928-4BA4-BE08-0E0A034D758C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database Scripts", "Database Scripts", "{CD0CA0D6-5D2A-487F-B111-51C4BA017C74}"
+	ProjectSection(SolutionItems) = preProject
+		Database Scripts\database_create.sql = Database Scripts\database_create.sql
+		Database Scripts\Paperless_0.0.1.sql = Database Scripts\Paperless_0.0.1.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,9 +44,28 @@ Global
 		{FE126F80-0F54-40B3-81B3-7EF521F99E0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE126F80-0F54-40B3-81B3-7EF521F99E0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE126F80-0F54-40B3-81B3-7EF521F99E0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5507368A-A97D-4279-A9F0-BB246E53C6C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5507368A-A97D-4279-A9F0-BB246E53C6C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5507368A-A97D-4279-A9F0-BB246E53C6C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5507368A-A97D-4279-A9F0-BB246E53C6C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5234BFE-6A67-4F3F-9835-A210952B51A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5234BFE-6A67-4F3F-9835-A210952B51A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5234BFE-6A67-4F3F-9835-A210952B51A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5234BFE-6A67-4F3F-9835-A210952B51A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{277DD2D4-ED02-495E-BEE7-F0BE999A0543}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{277DD2D4-ED02-495E-BEE7-F0BE999A0543}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{277DD2D4-ED02-495E-BEE7-F0BE999A0543}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{277DD2D4-ED02-495E-BEE7-F0BE999A0543}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BEB2B54-7928-4BA4-BE08-0E0A034D758C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BEB2B54-7928-4BA4-BE08-0E0A034D758C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BEB2B54-7928-4BA4-BE08-0E0A034D758C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BEB2B54-7928-4BA4-BE08-0E0A034D758C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{277DD2D4-ED02-495E-BEE7-F0BE999A0543} = {AE6D69B9-9DDC-44BD-8D8E-0FD99CB154F3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DE618481-3A1B-4B40-970C-6BFE79624A41}
