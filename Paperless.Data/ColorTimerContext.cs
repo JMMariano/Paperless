@@ -7,6 +7,8 @@ namespace Paperless.Data
 {
     public partial class ColorTimerContext : DbContext
     {
+        #region Constructors
+
         public ColorTimerContext()
         {
         }
@@ -16,7 +18,15 @@ namespace Paperless.Data
         {
         }
 
+        #endregion
+
+        #region Properties
+
         public virtual DbSet<ColorTimer> ColorTimers { get; set; }
+
+        #endregion
+
+        #region Methods
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -38,5 +48,7 @@ namespace Paperless.Data
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+        #endregion
     }
 }
