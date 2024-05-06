@@ -5,8 +5,8 @@ namespace Paperless.Models
     // TODO: Figure out getters and setters, if needed
     public class ColorTimer : IEqualityComparer<ColorTimer>
     {
-
         #region Properties
+
         public string? Name { get; set; }
 
         public string? ColorHexCode { get; set; }
@@ -30,7 +30,7 @@ namespace Paperless.Models
             Name = name;
             ColorHexCode = hexCode;
             TotalTimeElapsed = 0;
-            LastTimeSynced = DateTime.Now;
+            LastTimeSynced = DateTime.UtcNow;
             IsRunning = false;
             UserId = userId;
         }

@@ -1,8 +1,4 @@
-﻿using Paperless.Models;
-using Paperless.Controllers;
-using System.Configuration;
-using System.Data;
-using System.Windows;
+﻿using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Paperless.Data;
 using Microsoft.EntityFrameworkCore;

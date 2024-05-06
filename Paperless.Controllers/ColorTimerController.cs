@@ -31,6 +31,7 @@ namespace Paperless.Controllers
 
         #region Methods
 
+        // TODO: Change return type once more knowledgeable on async programming
         /// <summary>
         /// Inserts a new color timer to the database and throws an error if the name already exists on the user's id
         /// </summary>
@@ -39,7 +40,7 @@ namespace Paperless.Controllers
         /// <param name="hexCode"></param>
         /// <returns></returns>
         [HttpPost("create/{name}")]
-        public async Task CreateColor(string name, [FromBody] int userId, [FromQuery] string hexCode)
+        public async Task<bool> CreateColor(string name, [FromBody] int userId, [FromQuery] string hexCode)
         {
             // Check if color already exists on the user's id.
             var res = await _colorTimerContext.ColorTimers
@@ -51,14 +52,15 @@ namespace Paperless.Controllers
                 // TODO: Get result first before saving
                 await _colorTimerContext.AddAsync(newColorTimer);
                 await _colorTimerContext.SaveChangesAsync();
+                return true;
             }
             else
             {
                 //Return an error and log details when the name already exists.
+                return false;
             }
         }
 
-        // TODO: Add LastTimeSynced as a query parameter
         // TODO: Do not use FromBody for user id
         // TODO: Change return type to also return the Color Timer
         /// <summary>
@@ -70,6 +72,14 @@ namespace Paperless.Controllers
         [HttpPost("start-timer/{name}")]
         public async Task StartTimer(string name, [FromBody] int userId)
         {
+            // Before starting the timer, make sure there is no timer instance running
+            var isStoppedTimers = await StopRunningTimersByUserId(userId);
+
+            if (!isStoppedTimers)
+            {
+                return;
+            }
+
             var res = await _colorTimerContext.ColorTimers
                 .SingleOrDefaultAsync(i => string.Equals(i.Name, name) && i.UserId == userId);
 
@@ -79,12 +89,13 @@ namespace Paperless.Controllers
             }
 
             res.IsRunning = true;
+            res.LastTimeSynced = DateTime.UtcNow;
             _colorTimerContext.Update(res);
             // TODO: Get result after saving and log any errors that occured
             await _colorTimerContext.SaveChangesAsync();
         }
 
-        // TODO: Add LastTimeSynced as a query parameter
+        // TODO: Optimization on the calculation since there are discrepancies on the TimeElapsed between the client and server (1 second difference). Probably due to millisecond subtraction.
         // TODO: Do not use FromBody for user id
         // TODO: Change return type to also return the Color Timer
         /// <summary>
@@ -95,7 +106,7 @@ namespace Paperless.Controllers
         /// <param name="timeElapsed"></param>
         /// <returns></returns>
         [HttpPost("stop-timer/{name}")]
-        public async Task StopTimer(string name, [FromBody] int userId, [FromQuery] int timeElapsed)
+        public async Task StopTimer(string name, [FromBody] int userId)
         {
             var res = await _colorTimerContext.ColorTimers
                 .SingleOrDefaultAsync(i => string.Equals(i.Name, name) && i.UserId == userId);
@@ -106,22 +117,55 @@ namespace Paperless.Controllers
             }
 
             res.IsRunning = false;
-            // TODO: Fix TotalTimeElapsed computation by referencing the last time synced (i.e. check if the LastTimeSynced from client and server match)
-            res.TotalTimeElapsed += timeElapsed;
+            res.TotalTimeElapsed += DateTime.UtcNow.Subtract(res.LastTimeSynced).Seconds;
+            res.LastTimeSynced = DateTime.UtcNow;
             _colorTimerContext.Update(res);
             // TODO: Get result after saving and log any errors that occured
             await _colorTimerContext.SaveChangesAsync();
+        }
+
+        public async Task<bool> StopRunningTimersByUserId([FromBody] int userId)
+        {
+            var res = await _colorTimerContext.ColorTimers.Where(i => i.UserId == userId).ToListAsync();
+
+            foreach (var colorTimer in res)
+            {
+                if (colorTimer.IsRunning)
+                {
+                    var timeElapsed = DateTime.UtcNow.Subtract(colorTimer.LastTimeSynced).Seconds;
+                    colorTimer.TotalTimeElapsed += timeElapsed;
+                    colorTimer.LastTimeSynced = DateTime.UtcNow;
+                    colorTimer.IsRunning = false;
+                    _colorTimerContext.Update(colorTimer);
+                }
+            }
+
+            if (res != null && res.Count > 0)
+            {
+                await _colorTimerContext.SaveChangesAsync();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         /// <summary>
         /// Returns all color timers of the current user.
         /// </summary>
         /// <returns></returns>
-        [HttpGet("getAllColorsTimers")]
-        public async Task<IList<ColorTimer>> GetAllColorTimers()
+        [HttpGet("getColorTimersByUserId")]
+        public async Task<IList<ColorTimer>> GetColorTimersByUserId([FromBody] int userId)
         {
-            var result = await _colorTimerContext.ColorTimers.ToListAsync();
-            return result;
+            var res = await _colorTimerContext.ColorTimers.Where(i => i.UserId == userId).ToListAsync();
+
+            if (res == null)
+            {
+                return Enumerable.Empty<ColorTimer>().ToList();
+            }
+
+            return res;
         }
 
         #endregion

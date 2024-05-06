@@ -1,22 +1,8 @@
 ﻿using System.ComponentModel;
-using System.Drawing;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Paperless.Controllers;
 using Paperless.Data;
-using Color = System.Windows.Media.Color;
-using ColorConverter = System.Windows.Media.ColorConverter;
 
-// TODO: Rename projects and namespaces to not have redundancy (e.g. too many things are named ColorTimer)
 namespace ColorTimerApplication
 {
     /// <summary>
@@ -24,28 +10,44 @@ namespace ColorTimerApplication
     /// </summary>
     public partial class MainWindow : Window
     {
+        #region Fields
+
+        private const int GUEST_ID = 1;
+
         public IList<Paperless.Models.ColorTimer> ColorTimers { get; set; } = new List<Paperless.Models.ColorTimer>();
         public ColorTimerController _colorTimerController;
 
+        #endregion
+
+        #region Constructors
+
         public MainWindow(ColorTimerContext colorTimerContext)
         {
-            InitializeComponent();
             _colorTimerController = new ColorTimerController(colorTimerContext);
+            InitializeComponent();
+            InitializeColorGrid();
         }
 
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Creates the initial color grid by fetching the current color timers. Uses the reserved id "GUEST_ID".
+        /// </summary>
         private async void InitializeColorGrid()
         {
-            var res = await _colorTimerController.GetAllColorTimers();
+            var res = await _colorTimerController.GetColorTimersByUserId(GUEST_ID);
 
-            if (res != null)
+            if (res != null && res.Count > 0)
             {
-                ColorTimers.ToList().AddRange(res.ToList());
+                ColorTimers = ColorTimers.Concat(res).ToList();
                 
                 for (int i = 0; i < ColorTimers.Count; i++)
                 {
                     var button = new ColorTimerButton(
-                        ColorTimers[i].Color,
-                        ColorTimers[i].ColorHexCode,
+                        (ColorTimers[i].Name ?? string.Empty),
+                        (ColorTimers[i].ColorHexCode ?? string.Empty),
                         ColorTimers[i].TotalTimeElapsed,
                         _colorTimerController);
 
@@ -54,30 +56,50 @@ namespace ColorTimerApplication
             }
         }
 
-        private void AddColor_Click(object sender, RoutedEventArgs e)
+        private async void AddColor_Click(object sender, RoutedEventArgs e)
         {
             var colorName = ColorNameTextBox.Text;
             var colorHexCode = ColorHexCodeTextBox.Text;
 
-            _colorTimerController.CreateColor(colorName, colorHexCode);
-            IList<Paperless.Models.ColorTimer> currentColorTimers = _colorTimerController.GetAllColors().ToList();
-            var newColorTimersFromServer = currentColorTimers.Except(ColorTimers, comparer: new Paperless.Models.ColorTimer()).ToList();
+            var res = await _colorTimerController.CreateColor(colorName, GUEST_ID, colorHexCode);
 
-            for (int i = 0; i < newColorTimersFromServer.Count; i++)
+            // If color does not exist yet from server, get the current pool of colors
+            if (res)
             {
-                var button = new ColorTimerButton(
-                    newColorTimersFromServer[i].Color,
-                    newColorTimersFromServer[i].ColorHexCode,
-                    newColorTimersFromServer[i].TotalTimeElapsed,
-                    _colorTimerController);
+                var currentColorTimers = await _colorTimerController.GetColorTimersByUserId(GUEST_ID);
 
-                ColorTimerGrid.Children.Add(button);
+                if (currentColorTimers != null)
+                {
+                    var newColorTimersFromServer = currentColorTimers.Except(ColorTimers, comparer: new Paperless.Models.ColorTimer()).ToList();
+
+                    for (int i = 0; i < newColorTimersFromServer.Count; i++)
+                    {
+                        var button = new ColorTimerButton(
+                            (newColorTimersFromServer[i].Name ?? string.Empty),
+                            (newColorTimersFromServer[i].ColorHexCode ?? string.Empty),
+                            newColorTimersFromServer[i].TotalTimeElapsed,
+                            _colorTimerController);
+
+                        ColorTimerGrid.Children.Add(button);
+                    }
+
+                    ColorTimers = ColorTimers.Concat(newColorTimersFromServer).ToList();
+                }
             }
         }
 
-        private void Quit_Click(object sender, RoutedEventArgs e)
+        private async void Quit_Click(object sender, RoutedEventArgs e)
         {
+            await _colorTimerController.StopRunningTimersByUserId(GUEST_ID);
             Application.Current.Shutdown();
         }
+
+        private async void Window_Closing(object sender, CancelEventArgs e)
+        {
+            await _colorTimerController.StopRunningTimersByUserId(GUEST_ID);
+            Application.Current.Shutdown();
+        }
+
+        #endregion
     }
 }
